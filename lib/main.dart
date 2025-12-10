@@ -50,11 +50,34 @@ class ImageSection extends StatelessWidget {
   }
 }
 
-class TitleSection extends StatelessWidget {
+// 🔁 改成 StatefulWidget，用来控制星星亮/灭和数字
+class TitleSection extends StatefulWidget {
   const TitleSection({super.key, required this.name, required this.location});
 
   final String name;
   final String location;
+
+  @override
+  State<TitleSection> createState() => _TitleSectionState();
+}
+
+class _TitleSectionState extends State<TitleSection> {
+  bool _isFavorited = false; // 一开始不亮
+  int _favoriteCount = 41;   // 初始数字
+
+  void _toggleFavorite() {
+    setState(() {
+      if (_isFavorited) {
+        // 已收藏 -> 取消收藏
+        _isFavorited = false;
+        _favoriteCount -= 1;
+      } else {
+        // 未收藏 -> 点亮收藏
+        _isFavorited = true;
+        _favoriteCount += 1;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +92,25 @@ class TitleSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
-                    name,
+                    widget.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                Text(location, style: TextStyle(color: Colors.grey[500])),
+                Text(
+                  widget.location,
+                  style: TextStyle(color: Colors.grey[500]),
+                ),
               ],
             ),
           ),
-          Icon(Icons.star, color: Colors.red[500]),
-          const Text('41'),
+          IconButton(
+            onPressed: _toggleFavorite,
+            icon: Icon(
+              _isFavorited ? Icons.star : Icons.star_border,
+              color: _isFavorited ? Colors.red[500] : Colors.grey[500],
+            ),
+          ),
+          Text('$_favoriteCount'),
         ],
       ),
     );
